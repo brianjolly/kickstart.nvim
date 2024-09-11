@@ -807,6 +807,31 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
       'hrsh7th/cmp-nvim-lsp-signature-help',
+
+      -- copilot cmp source, aki
+      {
+        'zbirenbaum/copilot-cmp',
+        dependencies = 'copilot.lua',
+        opts = {},
+        config = function(_, opts)
+          local copilot_cmp = require 'copilot_cmp'
+          copilot_cmp.setup(opts)
+          -- attach cmp source whenever copilot attaches
+          -- fixes lazy-loading issues with the copilot cmp source
+          local on_attach = function(client, _)
+            if client.name == 'copilot' then
+              copilot_cmp._on_insert_enter {}
+            end
+          end
+          vim.api.nvim_create_autocmd('LspAttach', {
+            callback = function(args)
+              local buffer = args.buf ---@type number
+              local client = vim.lsp.get_client_by_id(args.data.client_id)
+              on_attach(client, buffer)
+            end,
+          })
+        end,
+      },
     },
     config = function()
       -- See `:help cmp`
@@ -884,6 +909,7 @@ require('lazy').setup({
           { name = 'luasnip' },
           { name = 'path' },
           { name = 'nvim_lsp_signature_help' },
+          { name = 'copilot', group_index = 1, priority = 100 },
         },
       }
     end,
@@ -1003,6 +1029,8 @@ require('lazy').setup({
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
+  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
