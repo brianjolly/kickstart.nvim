@@ -1,3 +1,7 @@
+-- https://theosteiner.de/debugging-javascript-frameworks-in-neovim
+-- https://nextjs.org/docs/pages/building-your-application/configuring/debugging
+-- https://www.lazyvim.org/extras/dap/core
+
 return {
   "mfussenegger/nvim-dap",
   lazy = true,
