@@ -87,27 +87,27 @@ return {
         dap.configurations[language] = {
           -- Debug single nodejs files
           {
+            name = "Launch file",
             type = "pwa-node",
             request = "launch",
-            name = "Launch file",
             program = "${file}",
             cwd = vim.fn.getcwd(),
             sourceMaps = true,
           },
           -- Debug nodejs processes (make sure to add --inspect when you run the process)
           {
+            name = "Attach",
             type = "pwa-node",
             request = "attach",
-            name = "Attach",
             processId = require("dap.utils").pick_process,
             cwd = vim.fn.getcwd(),
             sourceMaps = true,
           },
           -- Debug web applications (client side)
           {
+            name = "Launch & Debug Chrome",
             type = "pwa-chrome",
             request = "launch",
-            name = "Launch & Debug Chrome",
             url = function()
               local co = coroutine.running()
               return coroutine.create(function()
@@ -239,6 +239,7 @@ return {
 
             -- which adapters to register in nvim-dap
             adapters = {
+              "node",
               "chrome",
               "pwa-node",
               "pwa-chrome",
