@@ -235,21 +235,6 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "canary",
-    dependencies = {
-      { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
-      { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
-    },
-    build = "make tiktoken", -- Only on MacOS or Linux
-    opts = {
-      debug = true, -- Enable debugging
-      -- See Configuration section for rest
-    },
-    -- See Commands section for default commands if you want to lazy load on them
-  },
-
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -548,7 +533,7 @@ require('lazy').setup({
 
           -- Fuzzy find all the symbols in your current document.
           --  Symbols are things like variables, functions, types, etc.
-          map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+          map('<leader>Ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
 
           -- Fuzzy find all the symbols in your current workspace.
           --  Similar to document symbols, except searches over your entire project.
@@ -763,31 +748,6 @@ require('lazy').setup({
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
-
-      -- copilot cmp source, aki
-      {
-        'zbirenbaum/copilot-cmp',
-        dependencies = 'copilot.lua',
-        opts = {},
-        config = function(_, opts)
-          local copilot_cmp = require 'copilot_cmp'
-          copilot_cmp.setup(opts)
-          -- attach cmp source whenever copilot attaches
-          -- fixes lazy-loading issues with the copilot cmp source
-          local on_attach = function(client, _)
-            if client.name == 'copilot' then
-              copilot_cmp._on_insert_enter {}
-            end
-          end
-          vim.api.nvim_create_autocmd('LspAttach', {
-            callback = function(args)
-              local buffer = args.buf ---@type number
-              local client = vim.lsp.get_client_by_id(args.data.client_id)
-              on_attach(client, buffer)
-            end,
-          })
-        end,
-      },
     },
     config = function()
       -- See `:help cmp`
@@ -964,8 +924,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  require 'kickstart.plugins.dap-min',
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.dap',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
