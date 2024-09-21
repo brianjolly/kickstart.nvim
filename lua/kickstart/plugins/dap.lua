@@ -101,55 +101,89 @@ kk
       }
     end
 
-  require("nvim-dap-virtual-text").setup {
-    commented = false,
-  }
+    require('dap').adapters.lldb = {
+      type = 'executable',
+      -- command = '/usr/bin/lldb-vscode', -- adjust as needed, must be absolute path
+      command = '/opt/homebrew/opt/llvm/bin/lldb-dap', -- adjust as needed, must be absolute path
+      name = 'lldb'
+    }
 
-  require("dapui").setup {
-    -- Set icons to characters that are more likely to work in every terminal.
-    --    Feel free to remove or use ones that you like more! :)
-    --    Don't feel like these are good choices.
-    icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-    controls = {
-      icons = {
-        pause = '⏸',
-        play = '▶',
-        step_into = '⏎',
-        step_over = '⏭',
-        step_out = '⏮',
-        step_back = 'b',
-        run_last = '▶▶',
-        terminate = '⏹',
-        disconnect = '⏏',
+    require('dap').configurations.cpp = {
+      {
+        name = 'Launch c++',
+        type = 'lldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+
+        -- 💀
+        -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+        --
+        --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+        --
+        -- Otherwise you might get the following error:
+        --
+        --    Error on launch: Failed to attach to the target process
+        --
+        -- But you should be aware of the implications:
+        -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+        -- runInTerminal = false,
       },
-    },
-    layouts = { {
-      elements = { {
-        id = "scopes",
-        size = 0.50
+    }
+
+    require("nvim-dap-virtual-text").setup {
+      commented = false,
+    }
+
+    require("dapui").setup {
+      -- Set icons to characters that are more likely to work in every terminal.
+      --    Feel free to remove or use ones that you like more! :)
+      --    Don't feel like these are good choices.
+      icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
+      controls = {
+        icons = {
+          pause = '⏸',
+          play = '▶',
+          step_into = '⏎',
+          step_over = '⏭',
+          step_out = '⏮',
+          step_back = 'b',
+          run_last = '▶▶',
+          terminate = '⏹',
+          disconnect = '⏏',
+        },
+      },
+      layouts = { {
+        elements = { {
+          id = "scopes",
+          size = 0.50
+        }, {
+            id = "breakpoints",
+            size = 0.10
+          }, {
+            id = "stacks",
+            size = 0.20
+          }, {
+            id = "watches",
+            size = 0.20
+          } },
+        position = "left",
+        size = 80
       }, {
-        id = "breakpoints",
-        size = 0.10
-      }, {
-        id = "stacks",
-        size = 0.20
-      }, {
-        id = "watches",
-        size = 0.20
-      } },
-    position = "left",
-    size = 80
-   }, {
-      elements = { {
-        id = "repl",
-        size = 0.7
-      }, {
-        id = "console",
-        size = 0.3
-      } },
-      position = "bottom",
-      size = 25
-    } },
+          elements = { {
+            id = "repl",
+            size = 0.7
+          }, {
+              id = "console",
+              size = 0.3
+            } },
+          position = "bottom",
+          size = 25
+        } },
     }
 
     local dap, dapui = require("dap"), require("dapui")
@@ -160,4 +194,4 @@ kk
     dap.listeners.before.event_exited["dapui_config"] = dapui.close
     dap.defaults.fallback.exception_breakpoints = {'Error', 'TypeError', 'raised'}
   end
-  }
+}
