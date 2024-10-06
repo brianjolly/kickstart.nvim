@@ -31,13 +31,14 @@ return {
     { "<leader>dj", function() require("dap").down() end, desc = "(dap) Down" },
     { "<leader>dk", function() require("dap").up() end, desc = "(dap) Up" },
     { "<leader>dl", function() require("dap").run_last() end, desc = "(dap) Run Last" },
-    { "<leader>do", function() require("dap").step_out() end, desc = "(dap) Step Out" },
-    { "<leader>dO", function() require("dap").step_over() end, desc = "(dap) Step Over" },
+    { "<leader>dO", function() require("dap").step_out() end, desc = "(dap) Step Out" },
+    { "<leader>do", function() require("dap").step_over() end, desc = "(dap) Step Over" },
     { "<leader>dp", function() require("dap").pause() end, desc = "(dap) Pause" },
     { "<leader>dr", function() require("dap").repl.toggle() end, desc = "(dap) Toggle REPL" },
     { "<leader>ds", function() require("dap").session() end, desc = "(dap) Session" },
     { "<leader>dt", function() require("dap").terminate() end, desc = "(dap) Terminate" },
     { "<leader>dw", function() require("dap.ui.widgets").hover() end, desc = "(dap) Widgets" },
+    { "<leader>d?", function() require("dapui").eval(nil, { enter = true}) end, desc = "(dap) Eval" },
     { "<leader>dui", function() require("dapui").toggle({reset=true}) end, desc = "(dap) Toggle UI" },
 kk
   },
@@ -104,7 +105,7 @@ kk
     require('dap').adapters.lldb = {
       type = 'executable',
       -- command = '/usr/bin/lldb-vscode', -- adjust as needed, must be absolute path
-      command = '/opt/homebrew/opt/llvm/bin/lldb-dap', -- adjust as needed, must be absolute path
+      command = '/usr/bin/lldb-dap', --'/opt/homebrew/opt/llvm/bin/lldb-dap', -- adjust as needed, must be absolute path
       name = 'lldb'
     }
 
