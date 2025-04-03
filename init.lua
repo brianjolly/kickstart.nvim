@@ -242,6 +242,29 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  'varnishcache-friends/vim-varnish',
+
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
+
+  {
+    "toppair/peek.nvim",
+    event = { "VeryLazy" },
+    build = "deno task --quiet build:fast",
+    config = function()
+      require("peek").setup()
+      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end,
+  },
+
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
@@ -361,6 +384,8 @@ require('lazy').setup({
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
         'nvim-telescope/telescope-fzf-native.nvim',
+        'ANGkeith/telescope-terraform-doc.nvim',
+        'cappyzawa/telescope-terraform.nvim',
 
         -- `build` is used to run some command when the plugin is installed/updated.
         -- This is only run then, not every time Neovim starts up.
@@ -376,6 +401,7 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      'nvim-telescope/telescope-media-files.nvim',
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -419,6 +445,8 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require("telescope").load_extension, 'terraform')
+      pcall(require("telescope").load_extension, 'terraform_doc')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -630,6 +658,21 @@ require('lazy').setup({
             })
           end
 
+          -- Function to toggle virtual text diagnostics
+          function ToggleVirtualText()
+            if vim.g.virtual_text_enabled == nil then
+              vim.g.virtual_text_enabled = true
+            end
+
+            vim.g.virtual_text_enabled = not vim.g.virtual_text_enabled
+
+            vim.diagnostic.config({
+              virtual_text = vim.g.virtual_text_enabled
+            })
+          end
+          -- Map the function to a key combination (e.g., <leader>tv)
+          vim.api.nvim_set_keymap('n', '<leader>dh', ':lua ToggleVirtualText()<CR>', { noremap = true, silent = true })
+
           -- The following code creates a keymap to toggle inlay hints in your
           -- code, if the language server you are using supports them
           --
@@ -692,6 +735,7 @@ require('lazy').setup({
         gopls = {},
         pyright = {},
         rust_analyzer = {},
+        terraformls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -733,6 +777,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'tflint',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -787,6 +832,10 @@ require('lazy').setup({
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
         javascript = {},
+        hcl = { "packer_fmt" },
+        terraform = { "terraform_fmt" },
+        tf = { "terraform_fmt" },
+        ["terraform-vars"] = { "terraform_fmt" },
       },
     },
   },
@@ -914,8 +963,12 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+    --
     -- https://dotfyle.com/neovim/colorscheme/trending
+    --
     'rebelot/kanagawa.nvim',
+    'nyoom-engineering/oxocarbon',
+    'folke/tokyonight.nvim',
     --'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
@@ -931,7 +984,10 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
       -- vim.cmd.colorscheme 'habamax'
-      vim.cmd.colorscheme 'kanagawa'
+      -- vim.cmd.colorscheme 'kanagawa'
+      -- vim.cmd.colorscheme 'oxocarbon'
+      -- vim.cmd.colorscheme 'tokyonight'
+      vim.cmd.colorscheme 'tokyonight-day'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -984,7 +1040,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'hcl', 'terraform' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {

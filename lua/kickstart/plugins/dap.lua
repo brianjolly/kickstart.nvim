@@ -105,7 +105,7 @@ kk
     require('dap').adapters.lldb = {
       type = 'executable',
       -- command = '/usr/bin/lldb-vscode', -- adjust as needed, must be absolute path
-      command = '/usr/bin/lldb-dap', --'/opt/homebrew/opt/llvm/bin/lldb-dap', -- adjust as needed, must be absolute path
+      command = '/usr/local/bin/lldb-dap', --'/opt/homebrew/opt/llvm/bin/lldb-dap', -- adjust as needed, must be absolute path
       name = 'lldb'
     }
 

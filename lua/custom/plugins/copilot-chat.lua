@@ -2,7 +2,7 @@
 --
 return {
   "CopilotC-Nvim/CopilotChat.nvim",
-  branch = "canary",
+  branch = "main",
   dependencies = {
     { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
     { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
@@ -10,8 +10,14 @@ return {
   build = "make tiktoken", -- Only on MacOS or Linux
   opts = {
     debug = true, -- Enable debugging
-    model = 'gpt-4o' -- 'gpt-4o' -- 'gpt-3.5-turbo' 'gpt-4' 'gpt-4o' 'o1-preview'
+    model = 'claude-3.5-sonnet', --'gpt-4o' 'gpt-4o' 'gpt-3.5-turbo' 'gpt-4' 'gpt-4o' 'o1-preview'
     -- See Configuration section for rest
+    mappings = {
+      accept_diff = {
+        normal = "",
+        insert = "",
+      }
+    },
   },
   -- See Commands section for default commands if you want to lazy load on them
   keys = {
