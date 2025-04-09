@@ -168,6 +168,9 @@ vim.opt.confirm = true
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+-- open a terminal
+vim.keymap.set('n', 't', '<cmd>below split | terminal<CR>')
+
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -691,28 +694,32 @@ require('lazy').setup({
         severity_sort = true,
         float = { border = 'rounded', source = 'if_many' },
         underline = { severity = vim.diagnostic.severity.ERROR },
-        signs = vim.g.have_nerd_font and {
-          text = {
-            [vim.diagnostic.severity.ERROR] = '󰅚 ',
-            [vim.diagnostic.severity.WARN] = '󰀪 ',
-            [vim.diagnostic.severity.INFO] = '󰋽 ',
-            [vim.diagnostic.severity.HINT] = '󰌶 ',
-          },
-        } or {},
-        virtual_text = {
-          source = 'if_many',
-          spacing = 2,
-          format = function(diagnostic)
-            local diagnostic_message = {
-              [vim.diagnostic.severity.ERROR] = diagnostic.message,
-              [vim.diagnostic.severity.WARN] = diagnostic.message,
-              [vim.diagnostic.severity.INFO] = diagnostic.message,
-              [vim.diagnostic.severity.HINT] = diagnostic.message,
-            }
-            return diagnostic_message[diagnostic.severity]
-          end,
-        },
+        --signs = vim.g.have_nerd_font and {
+        --  text = {
+        --    [vim.diagnostic.severity.ERROR] = '󰅚 ',
+        --    [vim.diagnostic.severity.WARN] = '󰀪 ',
+        --    [vim.diagnostic.severity.INFO] = '󰋽 ',
+        --    [vim.diagnostic.severity.HINT] = '󰌶 ',
+        --  },
+        --} or {},
+        --virtual_text = {
+        --  source = 'if_many',
+        --  spacing = 2,
+        --  format = function(diagnostic)
+        --    local diagnostic_message = {
+        --      [vim.diagnostic.severity.ERROR] = diagnostic.message,
+        --      [vim.diagnostic.severity.WARN] = diagnostic.message,
+        --      [vim.diagnostic.severity.INFO] = diagnostic.message,
+        --      [vim.diagnostic.severity.HINT] = diagnostic.message,
+        --    }
+        --    return diagnostic_message[diagnostic.severity]
+        --  end,
+        --},
+        virtual_lines = true,
+        --  -- Only show virtual line diagnostics for the current cursor line
+        --  current_line = true,
       }
+
 
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
@@ -732,7 +739,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        gopls = {},
+        --gopls = {},
         pyright = {},
         rust_analyzer = {},
         terraformls = {},
@@ -969,28 +976,27 @@ require('lazy').setup({
     'rebelot/kanagawa.nvim',
     'nyoom-engineering/oxocarbon',
     'folke/tokyonight.nvim',
-    --'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
+      --@diagnostic disable-next-line: missing-fields
+      --require('tokyonight').setup {
+      --  styles = {
+      --    comments = { italic = false }, -- Disable italics in comments
+      --  },
+      --}
 
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      -- vim.cmd.colorscheme 'habamax'
+       vim.cmd.colorscheme 'habamax'
       -- vim.cmd.colorscheme 'kanagawa'
       -- vim.cmd.colorscheme 'oxocarbon'
       -- vim.cmd.colorscheme 'tokyonight'
-      vim.cmd.colorscheme 'tokyonight-day'
+      -- vim.cmd.colorscheme 'tokyonight-day'
 
       -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+      -- vim.cmd.hi 'Comment gui=none'
     end,
   },
 

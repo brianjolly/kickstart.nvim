@@ -14,8 +14,8 @@ return {
     -- See Configuration section for rest
     mappings = {
       accept_diff = {
-        normal = "",
-        insert = "",
+        normal = '<C-g>',
+        insert = '<C-g>',
       }
     },
   },
