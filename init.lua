@@ -744,7 +744,19 @@ require('lazy').setup({
       local servers = {
         clangd = {},
         --gopls = {},
-        pyright = {},
+        pyright = {
+            settings = {
+                python = {
+                    analysis = {
+                        autoSearchPaths = true,
+                        useLibraryCodeForTypes = true,
+                        diagnosticMode = "workspace"
+                    },
+                    venvPath = ".",
+                    venv = ".venv"
+                }
+            }
+        },
         rust_analyzer = {},
         terraformls = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -964,6 +976,7 @@ require('lazy').setup({
           { name = 'path' },
           { name = 'nvim_lsp_signature_help' },
           { name = 'copilot', group_index = 1, priority = 100 },
+          { name = 'codecompanion', group_index = 1, priority = 200 },
         },
       }
     end,
