@@ -1,13 +1,12 @@
-
-local progress = require("fidget.progress")
+local progress = require 'fidget.progress'
 
 local M = {}
 
 function M:init()
-  local group = vim.api.nvim_create_augroup("CodeCompanionFidgetHooks", {})
+  local group = vim.api.nvim_create_augroup('CodeCompanionFidgetHooks', {})
 
-  vim.api.nvim_create_autocmd({ "User" }, {
-    pattern = "CodeCompanionRequestStarted",
+  vim.api.nvim_create_autocmd({ 'User' }, {
+    pattern = 'CodeCompanionRequestStarted',
     group = group,
     callback = function(request)
       local handle = M:create_progress_handle(request)
@@ -15,8 +14,8 @@ function M:init()
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "User" }, {
-    pattern = "CodeCompanionRequestFinished",
+  vim.api.nvim_create_autocmd({ 'User' }, {
+    pattern = 'CodeCompanionRequestFinished',
     group = group,
     callback = function(request)
       local handle = M:pop_progress_handle(request.data.id)
@@ -41,31 +40,31 @@ function M:pop_progress_handle(id)
 end
 
 function M:create_progress_handle(request)
-  return progress.handle.create({
-    title = " Requesting assistance (" .. request.data.strategy .. ")",
-    message = "In progress...",
+  return progress.handle.create {
+    title = ' Requesting assistance (' .. request.data.strategy .. ')',
+    message = 'In progress...',
     lsp_client = {
       name = M:llm_role_title(request.data.adapter),
     },
-  })
+  }
 end
 
 function M:llm_role_title(adapter)
   local parts = {}
   table.insert(parts, adapter.formatted_name)
-  if adapter.model and adapter.model ~= "" then
-    table.insert(parts, "(" .. adapter.model .. ")")
+  if adapter.model and adapter.model ~= '' then
+    table.insert(parts, '(' .. adapter.model .. ')')
   end
-  return table.concat(parts, " ")
+  return table.concat(parts, ' ')
 end
 
 function M:report_exit_status(handle, request)
-  if request.data.status == "success" then
-    handle.message = "Completed"
-  elseif request.data.status == "error" then
-    handle.message = " Error"
+  if request.data.status == 'success' then
+    handle.message = 'Completed'
+  elseif request.data.status == 'error' then
+    handle.message = ' Error'
   else
-    handle.message = "󰜺 Cancelled"
+    handle.message = '󰜺 Cancelled'
   end
 end
 
