@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -176,6 +176,39 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- tab handling
+vim.opt['tabstop'] = 2
+vim.opt['shiftwidth'] = 2
+
+-- MY CUSTOM OPTIONS
+-- open a terminal
+vim.keymap.set('n', '<leader>tt', '<cmd>below split | terminal<CR>', { desc = 'Open a terminal buffer' })
+-- escape to normal mode terminal
+vim.keymap.set('t', '<leader><Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+-- edit this configuration file
+vim.keymap.set('n', '<leader>ec', ':e $MYVIMRC<CR>', { desc = 'Edit Neovim config' })
+
+-- Function to toggle virtual text diagnostics
+function ToggleVirtualText()
+  if vim.g.virtual_text_enabled == nil then
+    --vim.g.virtual_text_enabled = true
+    vim.g.virtual_lines = true
+  end
+
+  --vim.g.virtual_text_enabled = not vim.g.virtual_text_enabled
+  vim.g.virtual_lines = not vim.g.virtual_lines
+
+  -- vim.diagnostic.config({
+  --   virtual_text = vim.g.virtual_text_enabled
+  -- })
+  vim.diagnostic.config {
+    virtual_lines = vim.g.virtual_lines,
+  }
+end
+-- END MY CUSTOM OPTIONS
+
+-- Map the function to a key combination (e.g., <leader>tv)
+vim.api.nvim_set_keymap('n', '<leader>dh', ':lua ToggleVirtualText()<CR>', { noremap = true, silent = true })
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -677,7 +710,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        --gopls = {},
+        gopls = {},
         pyright = {
           settings = {
             python = {
@@ -699,7 +732,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
+        ts_ls = {},
         --
 
         lua_ls = {
@@ -775,7 +808,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { terraform = true, c = true, cpp = true, javascript = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -919,6 +952,7 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
+      vim.api.nvim_set_hl(0, 'WinSeparator', { fg = '#7aa2f7', bg = 'NONE', bold = true })
     end,
   },
 
@@ -1001,7 +1035,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
