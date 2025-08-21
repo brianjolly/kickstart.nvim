@@ -10,19 +10,31 @@ return {
   init = function()
     require('custom.plugins.codecompanion.fidget-spinner'):init()
   end,
+  keys = {
+    { '<leader>cc', '', desc = '+codecompanion', mode = { 'n', 'v' } },
+    { '<leader>ccp', '<cmd>CodeCompanionActions<cr>', mode = { 'n', 'v' }, desc = 'Prompt Actions (CodeCompanion)' },
+    { '<leader>cct', '<cmd>CodeCompanionChat Toggle<cr>', mode = { 'n', 'v' }, desc = 'Toggle (CodeCompanion)' },
+    { '<leader>cca', '<cmd>CodeCompanionChat Add<cr>', mode = 'v', desc = 'Add code to CodeCompanion' },
+    { '<leader>cci', '<cmd>CodeCompanion<cr>', mode = 'n', desc = 'Inline prompt (CodeCompanion)' },
+  },
   opts = {
     opts = {
       log_level = 'DEBUG',
     },
     strategies = {
       chat = {
-        adapter = 'qwen',
+        adapter = 'claude',
       },
       inline = {
-        adapter = 'qwen',
+        adapter = 'claude',
+        keymaps = {
+          accept_change = { modes = { n = '<leader>gda' } }, -- gDiffAccept },
+          reject_change = { modes = { n = '<leader>gdr' } }, -- gDiffReject },
+          always_accept = { modes = { n = '<leader>gdt' } },
+        },
       },
       cmd = {
-        adapter = 'qwen',
+        adapter = 'claude',
       },
     },
     display = {
@@ -37,12 +49,55 @@ return {
         start_in_insert_mode = true, -- Open the chat buffer in insert mode?
       },
     },
+    extensions = {
+      mcphub = {
+        callback = 'mcphub.extensions.codecompanion',
+        opts = {
+          make_tools = true,
+          show_server_tools_in_chat = true,
+          add_mcp_prefix_to_tool_names = false,
+          show_result_in_chat = true,
+          make_vars = true,
+          make_slash_commands = true,
+        },
+      },
+    },
     adapters = {
+      gemini = function()
+        return require('codecompanion.adapters').extend('gemini', {
+          schema = {
+            model = { default = 'gemini-2.5-pro' },
+          },
+          env = { api_key = 'cmd: cat ~/.gemini-token' },
+        })
+      end,
+      claude = function()
+        return require('codecompanion.adapters').extend('anthropic', {
+          schema = {
+            model = { default = 'claude-3-5-sonnet-latest' },
+          },
+          env = {
+            api_key = 'cmd: cat ~/.anthropic-token',
+          },
+        })
+      end,
+      gptoss = function()
+        return require('codecompanion.adapters').extend('ollama', {
+          env = {
+            url = ollama_addr,
+          },
+          schema = { model = { default = 'gpt-oss:20b' } },
+          headers = {
+            ['Content-Type'] = 'application/json',
+            ['Authorization'] = 'Bearer ${api_key}',
+          },
+          parameters = { sync = true },
+        })
+      end,
       devstral = function()
         return require('codecompanion.adapters').extend('ollama', {
           env = {
-            url = ollama_addr, --"http://localhost:11434",
-            --url = "http://192.168.2.146:11434",
+            url = ollama_addr,
           },
           schema = {
             model = {
@@ -58,22 +113,14 @@ return {
           },
         })
       end,
-      qwen = function()
+      awen3coder = function()
         return require('codecompanion.adapters').extend('ollama', {
           env = {
-            url = ollama_addr, --"http://192.168.2.147:11434",
-            --url = "http://192.168.1.9:11434",
-            --api_key = "OLLAMA_API_KEY",
+            url = ollama_addr,
           },
           schema = {
             model = {
-              --default = "qwen2.5-coder:14b",
-              default = 'qwen2.5-coder:32b',
-              --default = "qwen2.5-coder:7b",
-              --default = "deepseek-coder:6.7b",
-              --default = "llama3:latest",
-              --default = "gemma3:27b",
-              --default = "qwq:latest",
+              default = 'qwen3-coder:30b',
             },
           },
           headers = {
@@ -89,15 +136,10 @@ return {
         return require('codecompanion.adapters').extend('ollama', {
           env = {
             url = 'http://192.168.1.9:11434',
-            --api_key = "OLLAMA_API_KEY",
           },
           schema = {
             model = {
               default = 'gemma3:27b',
-              --default = "qwen2.5-coder:7b",
-              --default = "deepseek-coder:6.7b",
-              --default = "llama3:latest",
-              --default = "qwq:latest",
             },
           },
           headers = {
@@ -113,7 +155,6 @@ return {
         return require('codecompanion.adapters').extend('ollama', {
           env = {
             url = 'http://192.168.1.9:11434',
-            --api_key = "OLLAMA_API_KEY",
           },
           schema = {
             model = {
