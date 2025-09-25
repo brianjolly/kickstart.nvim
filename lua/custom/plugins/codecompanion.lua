@@ -5,7 +5,13 @@ return {
   dependencies = {
     'nvim-lua/plenary.nvim',
     'nvim-treesitter/nvim-treesitter',
+    'ravitemer/codecompanion-history.nvim',
     'j-hui/fidget.nvim',
+    {
+      'MeanderingProgrammer/render-markdown.nvim',
+      dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+      ft = { 'markdown', 'codecompanion' },
+    },
   },
   init = function()
     require('custom.plugins.codecompanion.fidget-spinner'):init()
@@ -41,10 +47,10 @@ return {
       chat = {
         auto_scroll = false,
         -- intro_message = "Welcome to CodeCompanion ✨! Press ? for options",
-        -- show_header_separator = false, -- Show header separators in the chat buffer? Set this to false if you're using an external markdown formatting plugin
-        -- separator = "─", -- The separator between the different messages in the chat buffer
+        show_header_separator = false, -- Show header separators in the chat buffer? Set this to false if you're using an external markdown formatting plugin
+        separator = '─', -- The separator between the different messages in the chat buffer
         show_references = true, -- Show references (from slash commands and variables) in the chat buffer?
-        show_settings = true, -- Show LLM settings at the top of the chat buffer?
+        show_settings = false, -- Show LLM settings at the top of the chat buffer?
         show_token_count = true, -- Show the token count for each response?
         start_in_insert_mode = true, -- Open the chat buffer in insert mode?
       },
@@ -61,115 +67,126 @@ return {
           make_slash_commands = true,
         },
       },
+      vectorcode = {},
+      -- vectorcode = {
+      --   opts = function()
+      --     return { add_tool = true }
+      --   end,
+      --   -- opts = {
+      --   --   add_tool = true,
+      --   -- },
+      -- },
     },
     adapters = {
-      gemini = function()
-        return require('codecompanion.adapters').extend('gemini', {
-          schema = {
-            model = { default = 'gemini-2.5-pro' },
-          },
-          env = { api_key = 'cmd: cat ~/.gemini-token' },
-        })
-      end,
-      claude = function()
-        return require('codecompanion.adapters').extend('anthropic', {
-          schema = {
-            model = { default = 'claude-3-5-sonnet-latest' },
-          },
-          env = {
-            api_key = 'cmd: cat ~/.anthropic-token',
-          },
-        })
-      end,
-      gptoss = function()
-        return require('codecompanion.adapters').extend('ollama', {
-          env = {
-            url = ollama_addr,
-          },
-          schema = { model = { default = 'gpt-oss:20b' } },
-          headers = {
-            ['Content-Type'] = 'application/json',
-            ['Authorization'] = 'Bearer ${api_key}',
-          },
-          parameters = { sync = true },
-        })
-      end,
-      devstral = function()
-        return require('codecompanion.adapters').extend('ollama', {
-          env = {
-            url = ollama_addr,
-          },
-          schema = {
-            model = {
-              default = 'devstral:24b',
+      http = {
+        gemini = function()
+          return require('codecompanion.adapters').extend('gemini', {
+            schema = {
+              model = { default = 'gemini-2.5-pro' },
             },
-          },
-          headers = {
-            ['Content-Type'] = 'application/json',
-            ['Authorization'] = 'Bearer ${api_key}',
-          },
-          parameters = {
-            sync = true,
-          },
-        })
-      end,
-      awen3coder = function()
-        return require('codecompanion.adapters').extend('ollama', {
-          env = {
-            url = ollama_addr,
-          },
-          schema = {
-            model = {
-              default = 'qwen3-coder:30b',
+            env = { api_key = 'cmd: cat ~/.gemini-token' },
+          })
+        end,
+        claude = function()
+          return require('codecompanion.adapters').extend('anthropic', {
+            schema = {
+              model = { default = 'claude-3-5-sonnet-latest' },
             },
-          },
-          headers = {
-            ['Content-Type'] = 'application/json',
-            ['Authorization'] = 'Bearer ${api_key}',
-          },
-          parameters = {
-            sync = true,
-          },
-        })
-      end,
-      gemma3 = function()
-        return require('codecompanion.adapters').extend('ollama', {
-          env = {
-            url = 'http://192.168.1.9:11434',
-          },
-          schema = {
-            model = {
-              default = 'gemma3:27b',
+            env = {
+              api_key = 'cmd: cat ~/.anthropic-token',
             },
-          },
-          headers = {
-            ['Content-Type'] = 'application/json',
-            ['Authorization'] = 'Bearer ${api_key}',
-          },
-          parameters = {
-            sync = true,
-          },
-        })
-      end,
-      deepseek = function()
-        return require('codecompanion.adapters').extend('ollama', {
-          env = {
-            url = 'http://192.168.1.9:11434',
-          },
-          schema = {
-            model = {
-              default = 'deepseek-coder:6.7b',
+          })
+        end,
+        gptoss = function()
+          return require('codecompanion.adapters').extend('ollama', {
+            env = {
+              url = ollama_addr,
             },
-          },
-          headers = {
-            ['Content-Type'] = 'application/json',
-            ['Authorization'] = 'Bearer ${api_key}',
-          },
-          parameters = {
-            sync = true,
-          },
-        })
-      end,
+            schema = { model = { default = 'gpt-oss:20b' } },
+            headers = {
+              ['Content-Type'] = 'application/json',
+              ['Authorization'] = 'Bearer ${api_key}',
+            },
+            parameters = { sync = true },
+          })
+        end,
+        devstral = function()
+          return require('codecompanion.adapters').extend('ollama', {
+            env = {
+              url = ollama_addr,
+            },
+            schema = {
+              model = {
+                default = 'devstral:24b',
+              },
+            },
+            headers = {
+              ['Content-Type'] = 'application/json',
+              ['Authorization'] = 'Bearer ${api_key}',
+            },
+            parameters = {
+              sync = true,
+            },
+          })
+        end,
+        awen3coder = function()
+          return require('codecompanion.adapters').extend('ollama', {
+            env = {
+              url = ollama_addr,
+            },
+            schema = {
+              model = {
+                default = 'qwen3-coder:30b',
+              },
+            },
+            headers = {
+              ['Content-Type'] = 'application/json',
+              ['Authorization'] = 'Bearer ${api_key}',
+            },
+            parameters = {
+              sync = true,
+            },
+          })
+        end,
+        gemma3 = function()
+          return require('codecompanion.adapters').extend('ollama', {
+            env = {
+              url = 'http://192.168.1.9:11434',
+            },
+            schema = {
+              model = {
+                default = 'gemma3:27b',
+              },
+            },
+            headers = {
+              ['Content-Type'] = 'application/json',
+              ['Authorization'] = 'Bearer ${api_key}',
+            },
+            parameters = {
+              sync = true,
+            },
+          })
+        end,
+        deepseek = function()
+          return require('codecompanion.adapters').extend('ollama', {
+            env = {
+              url = 'http://192.168.1.9:11434',
+            },
+            schema = {
+              model = {
+                default = 'deepseek-coder:6.7b',
+              },
+            },
+            headers = {
+              ['Content-Type'] = 'application/json',
+              ['Authorization'] = 'Bearer ${api_key}',
+            },
+            parameters = {
+              sync = true,
+            },
+          })
+        end,
+      },
     },
   },
 }
