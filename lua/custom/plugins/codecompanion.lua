@@ -56,18 +56,18 @@ return {
       },
     },
     extensions = {
-      mcphub = {
-        callback = 'mcphub.extensions.codecompanion',
-        opts = {
-          make_tools = true,
-          show_server_tools_in_chat = true,
-          add_mcp_prefix_to_tool_names = false,
-          show_result_in_chat = true,
-          make_vars = true,
-          make_slash_commands = true,
-        },
-      },
-      vectorcode = {},
+      --mcphub = {
+      --  callback = 'mcphub.extensions.codecompanion',
+      --  opts = {
+      --    make_tools = true,
+      --    show_server_tools_in_chat = true,
+      --    add_mcp_prefix_to_tool_names = false,
+      --    show_result_in_chat = true,
+      --    make_vars = true,
+      --    make_slash_commands = true,
+      --  },
+      --},
+      --vectorcode = {},
       -- vectorcode = {
       --   opts = function()
       --     return { add_tool = true }
@@ -90,7 +90,7 @@ return {
         claude = function()
           return require('codecompanion.adapters').extend('anthropic', {
             schema = {
-              model = { default = 'claude-3-5-sonnet-latest' },
+              model = { default = 'claude-sonnet-4-5' },
             },
             env = {
               api_key = 'cmd: cat ~/.anthropic-token',
