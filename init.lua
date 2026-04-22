@@ -179,6 +179,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- tab handling
 vim.opt['tabstop'] = 2
 vim.opt['shiftwidth'] = 2
+vim.opt['expandtab'] = true
 
 -- MY CUSTOM OPTIONS
 -- open a terminal
@@ -808,7 +809,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { terraform = true, c = true, cpp = true, javascript = true }
+        local disable_filetypes = { terraform = true, c = true, cpp = true, javascript = true, typescript = true, javascriptreact = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
