@@ -9,8 +9,10 @@ return {
     local function set_my_markdown_inline_code_hl()
       if vim.o.background == 'light' then
         vim.api.nvim_set_hl(0, 'MyMarkdownCodeInline', { fg = '#24292f', bg = '#e7eaee' })
+        vim.api.nvim_set_hl(0, 'MyMarkdownCodeBlock', { fg = '#24292f', bg = '#e7eaee' })
       else
-        vim.api.nvim_set_hl(0, 'MyMarkdownCodeInline', { fg = '#f0f0f0', bg = '#3d3d3d' })
+        vim.api.nvim_set_hl(0, 'MyMarkdownCodeInline', { fg = '#f0f0f0', bg = '#000000' })
+        vim.api.nvim_set_hl(0, 'MyMarkdownCodeBlock', { fg = '#f0f0f0', bg = '#000000' })
       end
     end
 
@@ -64,6 +66,7 @@ return {
       },
       code = {
         highlight_inline = 'MyMarkdownCodeInline',
+        highlight = 'MyMarkdownCodeBlock',
       },
     }
   end,
